@@ -13,9 +13,9 @@ import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Projections.exclude;
 import static com.mongodb.client.model.Projections.fields;
 
+
 import org.bson.Document;
 import org.bson.types.ObjectId;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +27,11 @@ import br.ufmg.engsoft.reprova.model.Question;
  * DAO for Question class on mongodb.
  */
 public class QuestionsDAO {
+  /**
+   * Singleton instance.
+   */
+  private static QuestionsDAO instance;
+  
   /**
    * Logger instance.
    */
@@ -41,28 +46,27 @@ public class QuestionsDAO {
    * Questions collection.
    */
   protected final MongoCollection<Document> collection;
-
-
-
+  
   /**
    * Basic constructor.
-   * @param db    the database, mustn't be null
-   * @param json  the json formatter for the database's documents, mustn't be null
    * @throws IllegalArgumentException  if any parameter is null
    */
-  public QuestionsDAO(Mongo db, Json json) {
-    if (db == null)
-      throw new IllegalArgumentException("db mustn't be null");
-
-    if (json == null)
-      throw new IllegalArgumentException("json mustn't be null");
+  private QuestionsDAO() {
+    Mongo db = Mongo.getInstance();
 
     this.collection = db.getCollection("questions");
 
-    this.json = json;
+    this.json = new Json();
   }
 
-
+  /**
+   * Returns the application's QuestionsDAO instance.
+   */
+  public static QuestionsDAO getInstance() {
+    if(instance == null) 
+      instance = new QuestionsDAO();
+    return instance;
+  }
 
   /**
    * Parse the given document.

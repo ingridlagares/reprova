@@ -15,34 +15,43 @@ import org.slf4j.LoggerFactory;
  */
 public class Mongo {
   /**
+   * Singleton instance.
+   */
+  private static Mongo instance;
+  
+  /**
    * Logger instance.
    */
   protected static final Logger logger = LoggerFactory.getLogger(Mongo.class);
-
-  /**
-   * Full connection string, obtained from 'REPROVA_MONGO' environment variable.
-   */
-  protected static final String endpoint = System.getenv("REPROVA_MONGO");
-
+  
   /**
    * The mongodb driver instance.
    */
   protected final MongoDatabase db;
-
-
-
+  
   /**
-   * Instantiate for access in the given database.
-   * @param db  the database name.
+   * Instantiate for access in the application database.
    */
-  public Mongo(String db) {
+  private Mongo() {
+    /**
+     * Full connection string, obtained from 'REPROVA_MONGO' environment variable.
+     */
+    String endpoint = System.getenv("REPROVA_MONGO");
     this.db = MongoClients
-      .create(Mongo.endpoint)
-      .getDatabase(db);
-
-    logger.info("connected to db '" + db + "'");
+    .create(endpoint)
+    .getDatabase("reprova");
+    
+    logger.info("connected to db 'reprova'");
   }
-
+    
+  /**
+   * Returns the application's mongo instance.
+   */
+  public static Mongo getInstance() {
+    if(instance == null) 
+      instance = new Mongo();
+    return instance;
+  }
 
   /**
    * Gets the given collection in the database.

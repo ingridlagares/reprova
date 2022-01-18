@@ -35,17 +35,14 @@ public class Setup {
    * Setup the service routes.
    * This sets up the routes under the routes directory,
    * and also static files on '/public'.
-   * @param json          the json formatter
    * @param questionsDAO  the DAO for Question
    * @throws IllegalArgumentException  if any parameter is null
    */
-  public static void routes(Json json, QuestionsDAO questionsDAO) {
-    if (json == null)
-      throw new IllegalArgumentException("json mustn't be null");
-
+  public static void routes(QuestionsDAO questionsDAO) {
     if (questionsDAO == null)
       throw new IllegalArgumentException("questionsDAO mustn't be null");
-
+    
+    Json json = new Json();
 
     Spark.port(Setup.port);
 
