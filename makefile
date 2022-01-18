@@ -26,3 +26,9 @@ heroku-ps:
 
 heroku-logs:
 	heroku logs -a reprova-engsoft
+
+run:
+	mvn compile
+	mvn assembly:single
+	docker-compose build
+	docker-compose up
