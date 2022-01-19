@@ -1,4 +1,4 @@
-package br.ufmg.engsoft.reprova.routes.api;
+package br.ufmg.engsoft.reprova.routes.controllers;
 
 import spark.Spark;
 import spark.Request;
@@ -7,19 +7,18 @@ import spark.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.ufmg.engsoft.reprova.database.QuestionsDAO;
-import br.ufmg.engsoft.reprova.model.Question;
+import br.ufmg.engsoft.reprova.services.QuestionService;
 import br.ufmg.engsoft.reprova.mime.json.Json;
 
 
 /**
  * Questions route.
  */
-public class Questions {
+public class QuestionController {
   /**
    * Logger instance.
    */
-  protected static final Logger logger = LoggerFactory.getLogger(Questions.class);
+  protected static final Logger logger = LoggerFactory.getLogger(QuestionController.class);
 
   /**
    * Access token.
@@ -29,52 +28,31 @@ public class Questions {
   /**
    * Messages.
    */
-  protected static final String unauthorised = "\"Unauthorised\"";
+  protected static final String unauthorized = "\"Unauthorized\"";
   protected static final String invalid = "\"Invalid request\"";
   protected static final String ok = "\"Ok\"";
-
 
   /**
    * Json formatter.
    */
   protected final Json json;
-  /**
-   * DAO for Question.
-   */
-  protected final QuestionsDAO questionsDAO;
 
-
-
-  /**
-   * Instantiate the questions endpoint.
-   * The setup method must be called to install the endpoint.
-   * @param json          the json formatter
-   * @param questionsDAO  the DAO for Question
-   * @throws IllegalArgumentException  if any parameter is null
-   */
-  public Questions(Json json, QuestionsDAO questionsDAO) {
-    if (json == null)
-      throw new IllegalArgumentException("json mustn't be null");
-
-    if (questionsDAO == null)
-      throw new IllegalArgumentException("questionsDAO mustn't be null");
-
-    this.json = json;
-    this.questionsDAO = questionsDAO;
+  public QuestionController() {
+    json = new Json();
   }
-
-
 
   /**
    * Install the endpoint in Spark.
    * Methods:
-   * - get
-   * - post
-   * - delete
+   * - GET
+   * - POST
+   * - PUT
+   * - DELETE
    */
   public void setup() {
     Spark.get("/api/questions", this::get);
     Spark.post("/api/questions", this::post);
+    Spark.put("/api/questions", this::put);
     Spark.delete("/api/questions", this::delete);
 
     logger.info("Setup /api/questions.");
@@ -82,10 +60,10 @@ public class Questions {
 
 
   /**
-   * Check if the given token is authorised.
+   * Check if the given token is authorized.
    */
-  protected static boolean authorised(String token) {
-    return Questions.token.equals(token);
+  protected static boolean authorized(String token) {
+    return QuestionController.token.equals(token);
   }
 
 
@@ -97,7 +75,7 @@ public class Questions {
     logger.info("Received questions get:");
 
     var id = request.queryParams("id");
-    var auth = authorised(request.queryParams("token"));
+    var auth = authorized(request.queryParams("token"));
 
     return id == null
       ? this.get(request, response, auth)
@@ -106,7 +84,7 @@ public class Questions {
 
   /**
    * Get id endpoint: fetch the specified question from the database.
-   * If not authorised, and the given question is private, returns an error message.
+   * If not authorized, and the given question is private, returns an error message.
    */
   protected Object get(Request request, Response response, String id, boolean auth) {
     if (id == null)
@@ -116,7 +94,7 @@ public class Questions {
 
     logger.info("Fetching question " + id);
 
-    var question = questionsDAO.get(id);
+    var question = QuestionService.getByID(id);
 
     if (question == null) {
       logger.error("Invalid request!");
@@ -125,9 +103,9 @@ public class Questions {
     }
 
     if (question.pvt && !auth) {
-      logger.info("Unauthorised token: " + token);
+      logger.info("Unauthorized token: " + token);
       response.status(403);
-      return unauthorised;
+      return unauthorized;
     }
 
     logger.info("Done. Responding...");
@@ -139,17 +117,14 @@ public class Questions {
 
   /**
    * Get all endpoint: fetch all questions from the database.
-   * If not authorised, fetches only public questions.
+   * If not authorized, fetches only public questions.
    */
   protected Object get(Request request, Response response, boolean auth) {
     response.type("application/json");
 
     logger.info("Fetching questions.");
 
-    var questions = questionsDAO.list(
-      null, // theme filtering is not implemented in this endpoint.
-      auth ? null : false
-    );
+    var questions = QuestionService.getAll(auth);
 
     logger.info("Done. Responding...");
 
@@ -160,10 +135,9 @@ public class Questions {
 
 
   /**
-   * Post endpoint: add or update a question in the database.
+   * Post endpoint: add a question in the database.
    * The question must be supplied in the request's body.
-   * If the question has an 'id' field, the operation is an update.
-   * Otherwise, the given question is added as a new question in the database.
+   * The given question is added as a new question in the database.
    * This endpoint is for authorized access only.
    */
   protected Object post(Request request, Response response) {
@@ -175,29 +149,22 @@ public class Questions {
 
     var token = request.queryParams("token");
 
-    if (!authorised(token)) {
-      logger.info("Unauthorised token: " + token);
+    if (!authorized(token)) {
+      logger.info("Unauthorized token: " + token);
       response.status(403);
-      return unauthorised;
+      return unauthorized;
     }
 
-    Question question;
+    boolean success = false;
     try {
-      question = json
-        .parse(body, Question.Builder.class)
-        .build();
-    }
-    catch (Exception e) {
+      success = QuestionService.create(body);
+      logger.info("Parsed question");
+      logger.info("Adding question.");
+    } catch(Exception e) {
       logger.error("Invalid request payload!", e);
       response.status(400);
       return invalid;
     }
-
-    logger.info("Parsed " + question.toString());
-
-    logger.info("Adding question.");
-
-    var success = questionsDAO.add(question);
 
     response.status(
        success ? 200
@@ -206,7 +173,51 @@ public class Questions {
 
     logger.info("Done. Responding...");
 
-    return ok;
+    return success ? ok : invalid;
+  }
+
+  /**
+   * Put endpoint: update a question in the database.
+   * The question must be supplied in the request's body.
+   * The given question is put as a the question with the given id.
+   * This endpoint is for authorized access only.
+   */
+  protected Object put(Request request, Response response) {
+    String body = request.body();
+
+    var id = request.queryParams("id");
+    var token = request.queryParams("token");
+
+    logger.info("Received questions put:" + body);
+
+    response.type("application/json");
+
+
+    if (!authorized(token)) {
+      logger.info("Unauthorized token: " + token);
+      response.status(403);
+      return unauthorized;
+    }
+
+    boolean success = false;
+    try {
+      success = QuestionService.update(id, body);
+      logger.info("Parsed question");
+      logger.info("Adding question.");
+    } catch(Exception e) {
+      logger.error("Invalid request payload!", e);
+      response.status(400);
+      return invalid;
+    }
+
+    response.status(
+       success ? 200
+               : 400
+    );
+
+    logger.info("Done. Responding...");
+
+    return success ? ok : invalid;
   }
 
 
@@ -223,10 +234,10 @@ public class Questions {
     var id = request.queryParams("id");
     var token = request.queryParams("token");
 
-    if (!authorised(token)) {
-      logger.info("Unauthorised token: " + token);
+    if (!authorized(token)) {
+      logger.info("Unauthorized token: " + token);
       response.status(403);
-      return unauthorised;
+      return unauthorized;
     }
 
     if (id == null) {
@@ -237,8 +248,7 @@ public class Questions {
 
     logger.info("Deleting question " + id);
 
-    var success = questionsDAO.remove(id);
-
+    boolean success  = QuestionService.deleteByID(id);
     logger.info("Done. Responding...");
 
     response.status(
@@ -246,6 +256,6 @@ public class Questions {
               : 400
     );
 
-    return ok;
+    return success ? ok : invalid;
   }
 }

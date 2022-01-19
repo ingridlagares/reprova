@@ -26,16 +26,16 @@ import br.ufmg.engsoft.reprova.model.Question;
 /**
  * DAO for Question class on mongodb.
  */
-public class QuestionsDAO {
+public class QuestionDAO {
   /**
    * Singleton instance.
    */
-  private static QuestionsDAO instance;
+  private static QuestionDAO instance;
   
   /**
    * Logger instance.
    */
-  protected static final Logger logger = LoggerFactory.getLogger(QuestionsDAO.class);
+  protected static final Logger logger = LoggerFactory.getLogger(QuestionDAO.class);
 
   /**
    * Json formatter.
@@ -51,7 +51,7 @@ public class QuestionsDAO {
    * Basic constructor.
    * @throws IllegalArgumentException  if any parameter is null
    */
-  private QuestionsDAO() {
+  private QuestionDAO() {
     Mongo db = Mongo.getInstance();
 
     this.collection = db.getCollection("questions");
@@ -62,9 +62,9 @@ public class QuestionsDAO {
   /**
    * Returns the application's QuestionsDAO instance.
    */
-  public static QuestionsDAO getInstance() {
+  public static QuestionDAO getInstance() {
     if(instance == null) 
-      instance = new QuestionsDAO();
+      instance = new QuestionDAO();
     return instance;
   }
 
@@ -154,8 +154,7 @@ public class QuestionsDAO {
 
 
   /**
-   * Adds or updates the given question in the database.
-   * If the given question has an id, update, otherwise add.
+   * Adds the given question in the database.
    * @param question  the question to be stored
    * @return Whether the question was successfully added.
    * @throws IllegalArgumentException  if any parameter is null
@@ -183,20 +182,57 @@ public class QuestionsDAO {
 
     var id = question.id;
     if (id != null) {
-      var result = this.collection.replaceOne(
-        eq(new ObjectId(id)),
-        doc
-      );
-
-      if (!result.wasAcknowledged()) {
-        logger.warn("Failed to replace question " + id);
-        return false;
-      }
+      throw new IllegalArgumentException("to update use the put method");
     }
-    else
-      this.collection.insertOne(doc);
+    
+    this.collection.insertOne(doc);
 
     logger.info("Stored question " + doc.get("_id"));
+
+    return true;
+  }
+
+  /**
+   * Updates the question with the given id to the question received.
+   * @param id  the question id
+   * @param question  the new question body
+   * @return Whether the question was successfully updated.
+   * @throws IllegalArgumentException  if any parameter is null
+   */
+  public boolean update(String id,Question question) {
+    if (id == null)
+      throw new IllegalArgumentException("id mustn't be null");
+    if (question == null)
+      throw new IllegalArgumentException("question mustn't be null");
+
+    Map<String, Object> record = question.record // Convert the keys to string,
+      .entrySet()                                // and values to object.
+      .stream()
+      .collect(
+        Collectors.toMap(
+          e -> e.getKey().toString(),
+          Map.Entry::getValue
+        )
+      );
+
+    Document doc = new Document()
+      .append("theme", question.theme)
+      .append("description", question.description)
+      .append("statement", question.statement)
+      .append("record", new Document(record))
+      .append("pvt", question.pvt);
+
+    var result = this.collection.replaceOne(
+      eq(new ObjectId(id)),
+      doc
+    );
+
+    if (!result.wasAcknowledged()) {
+      logger.warn("Failed to replace question " + id);
+      return false;
+    }
+    
+    logger.info("Updated question " + doc.get("_id"));
 
     return true;
   }
@@ -212,15 +248,15 @@ public class QuestionsDAO {
     if (id == null)
       throw new IllegalArgumentException("id mustn't be null");
 
-    var result = this.collection.deleteOne(
-      eq(new ObjectId(id))
-    ).wasAcknowledged();
-
-    if (result)
-      logger.info("Deleted question " + id);
-    else
-      logger.warn("Failed to delete question " + id);
-
-    return result;
+    Question question = this.get(id);
+    if(question != null) {
+       this.collection.deleteOne(
+        eq(new ObjectId(id))
+        );
+        logger.info("Deleted question " + id);
+        return true;
+    }
+    logger.warn("Failed to delete question " + id);
+    return false;
   }
 }
