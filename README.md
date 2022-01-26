@@ -4,9 +4,13 @@ Trabalho prático da disciplina de Reutilização de Software, DCC/UFMG, 2021/2
 
 ## Instruções de construção/ambiente (UNIX)
 
+### Compilação e execução
+
 O makefile do projeto contém instruções para construção do projeto utilizando [Maven](https://maven.apache.org/), ferramenta de gerenciamento de projetos Java e inicialização, usando [docker](https://www.docker.com/), ferremanta de virtualização de ambientes, usada para rodar a aplicação. Para construir o projeto é necessário primeiro [instalar o Maven](https://maven.apache.org/install.html) e o [docker](https://docs.docker.com/get-docker/). No tutorial de instalação do maven se menciona o uso da variável de ambiente `JAVA_HOME`; instruções para sua configuração **em MacOS** pode ser encontrada [aqui](https://mkyong.com/java/how-to-set-java_home-environment-variable-on-mac-os-x/).
 
 Com o mvn instalado e docker instalados, basta rodar o comando `make build-run` (assumindo que `make` esteja instalado em sua máquina) que vai fazer todo o processo desde a compilação até a criação e a execução do programa no container docker, caso o programa já esteja compilado e se deseje apenas executar a aplicação, pode ser usado o comando `make docker-build-run` ou semelhantemente apenas `make docker-run` caso o container já esteja montada.
+
+### Dependências
 
 A aplicação depende de uma conexão com um banco de dados MongoDB, por esse motivo são criadas dois containers no momento de execução da aplicação, em um container está presente a instância do banco de dados e na outra a aplicação.
 
