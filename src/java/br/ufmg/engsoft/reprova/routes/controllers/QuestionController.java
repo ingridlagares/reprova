@@ -8,6 +8,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.ufmg.engsoft.reprova.services.QuestionService;
+import br.ufmg.engsoft.reprova.services.handlers.CreateQuestionHandler;
+import br.ufmg.engsoft.reprova.services.handlers.DeleteQuestionHandler;
+import br.ufmg.engsoft.reprova.services.handlers.GetQuestionByIdHandler;
+import br.ufmg.engsoft.reprova.services.handlers.GetQuestionsHandler;
+import br.ufmg.engsoft.reprova.services.handlers.UpdateQuestionHandler;
+import br.ufmg.engsoft.reprova.services.input.CreateQuestionInput;
+import br.ufmg.engsoft.reprova.services.input.DeleteQuestionInput;
+import br.ufmg.engsoft.reprova.services.input.GetQuestionByIdInput;
+import br.ufmg.engsoft.reprova.services.input.GetQuestionsInput;
+import br.ufmg.engsoft.reprova.services.input.UpdateQuestionInput;
+import br.ufmg.engsoft.reprova.services.interfaces.ICreateQuestionHandler;
+import br.ufmg.engsoft.reprova.services.interfaces.IDeleteQuestionHandler;
+import br.ufmg.engsoft.reprova.services.interfaces.IGetQuestionByIdHandler;
+import br.ufmg.engsoft.reprova.services.interfaces.IGetQuestionsHandler;
+import br.ufmg.engsoft.reprova.services.interfaces.IUpdateQuestionHandler;
+import br.ufmg.engsoft.reprova.services.output.CreateQuestionOutput;
+import br.ufmg.engsoft.reprova.services.output.DeleteQuestionOutput;
+import br.ufmg.engsoft.reprova.services.output.UpdateQuestionOutput;
 import br.ufmg.engsoft.reprova.mime.json.Json;
 
 
@@ -94,7 +112,11 @@ public class QuestionController {
 
     logger.info("Fetching question " + id);
 
-    var question = QuestionService.getByID(id);
+		GetQuestionByIdInput input = new GetQuestionByIdInput(id);
+		IGetQuestionByIdHandler handler = new GetQuestionByIdHandler();
+		var output = handler.handle(input);
+
+    var question = output.getQuestion();
 
     if (question == null) {
       logger.error("Invalid request!");
@@ -124,7 +146,11 @@ public class QuestionController {
 
     logger.info("Fetching questions.");
 
-    var questions = QuestionService.getAll(auth);
+		GetQuestionsInput input = new GetQuestionsInput(auth);
+		IGetQuestionsHandler handler = new GetQuestionsHandler();
+		var output = handler.handle(input);
+
+    var questions = output.getQuestions();
 
     logger.info("Done. Responding...");
 
@@ -154,10 +180,12 @@ public class QuestionController {
       response.status(403);
       return unauthorized;
     }
-
-    boolean success = false;
+		
+		CreateQuestionInput input = new CreateQuestionInput(body);
+		ICreateQuestionHandler handler = new CreateQuestionHandler();
+		CreateQuestionOutput output;
     try {
-      success = QuestionService.create(body);
+      output = handler.handle(input);
       logger.info("Parsed question");
       logger.info("Adding question.");
     } catch(Exception e) {
@@ -167,13 +195,13 @@ public class QuestionController {
     }
 
     response.status(
-       success ? 200
+			output.isCreated() ? 200
                : 400
     );
 
     logger.info("Done. Responding...");
 
-    return success ? ok : invalid;
+    return output.isCreated() ? ok : invalid;
   }
 
   /**
@@ -199,9 +227,11 @@ public class QuestionController {
       return unauthorized;
     }
 
-    boolean success = false;
+    UpdateQuestionInput input = new UpdateQuestionInput(id, body);
+		IUpdateQuestionHandler handler = new UpdateQuestionHandler();
+		UpdateQuestionOutput output;
     try {
-      success = QuestionService.update(id, body);
+      output = handler.handle(input);
       logger.info("Parsed question");
       logger.info("Adding question.");
     } catch(Exception e) {
@@ -211,13 +241,13 @@ public class QuestionController {
     }
 
     response.status(
-       success ? 200
+			output.isUpdated() ? 200
                : 400
     );
 
     logger.info("Done. Responding...");
 
-    return success ? ok : invalid;
+    return output.isUpdated() ? ok : invalid;
   }
 
 
@@ -248,14 +278,18 @@ public class QuestionController {
 
     logger.info("Deleting question " + id);
 
-    boolean success  = QuestionService.deleteByID(id);
+		DeleteQuestionInput input = new DeleteQuestionInput(id);
+		IDeleteQuestionHandler handler = new DeleteQuestionHandler();
+		DeleteQuestionOutput output = handler.handle(input);
+
+
     logger.info("Done. Responding...");
 
     response.status(
-      success ? 200
+      output.isDeleted() ? 200
               : 400
     );
 
-    return success ? ok : invalid;
+    return output.isDeleted() ? ok : invalid;
   }
 }
