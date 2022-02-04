@@ -192,6 +192,10 @@ public class QuestionDAO {
       if(question.options.size() != Integer.valueOf(question.optCount)) {
         return false;
       }
+      
+      if(Integer.valueOf(question.optCount) < 2) {
+        return false;
+      }
     }
 
     var id = question.id;
@@ -244,8 +248,12 @@ public class QuestionDAO {
       if(Integer.valueOf(System.getenv("OPTIONS")) != question.options.size()) {
         throw new Error("Suas configurações apenas permitem questões de tamanho "+System.getenv("OPTIONS")+ ".");
       }
-
+      
       if(question.options.size() != Integer.valueOf(question.optCount)) {
+        return false;
+      }
+
+      if(Integer.valueOf(question.optCount) < 2) {
         return false;
       }
     }
