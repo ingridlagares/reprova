@@ -24,11 +24,11 @@ Para a execução do programa é necessário a criação de um arquivo de nome `
 
 Além disso, também é necessário configurar as features usando as seguintes variáveis ainda no arquivo `.env` que são variáveis booleanas, elas precisam estar sempre preenchidas, até mesmo quando a feature não é desejada, nesse caso se atribuindo o valor `false`:
 
-...
+* `OPEN`: Se questões abertas estarão habilitadas ou não no sistema.
 
-**TODO**
+* `MULTIPLE_CHOICE`: Se questões de múltipla escolha estarão habilitadas ou não no sistema.
 
-...
+* `OPTIONS`: Quantidade de opções presentes nas questões fechadas caso o sistema tenha questões fechadas.
 
 ## Postman para testes
 
