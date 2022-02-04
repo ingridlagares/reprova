@@ -7,7 +7,6 @@ import spark.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.ufmg.engsoft.reprova.services.QuestionService;
 import br.ufmg.engsoft.reprova.services.handlers.CreateQuestionHandler;
 import br.ufmg.engsoft.reprova.services.handlers.DeleteQuestionHandler;
 import br.ufmg.engsoft.reprova.services.handlers.GetQuestionByIdHandler;
@@ -180,7 +179,14 @@ public class QuestionController {
       response.status(403);
       return unauthorized;
     }
-		
+
+    if(System.getenv("MULTIPLE_CHOICE") == "false" 
+      && System.getenv("OPEN") == "false"
+    ) {
+      response.status(403);
+      return invalid;
+    }
+  
 		CreateQuestionInput input = new CreateQuestionInput(body);
 		ICreateQuestionHandler handler = new CreateQuestionHandler();
 		CreateQuestionOutput output;

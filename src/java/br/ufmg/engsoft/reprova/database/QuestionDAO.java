@@ -172,13 +172,27 @@ public class QuestionDAO {
           Map.Entry::getValue
         )
       );
-
+      
     Document doc = new Document()
       .append("theme", question.theme)
       .append("description", question.description)
       .append("statement", question.statement)
       .append("record", new Document(record))
-      .append("pvt", question.pvt);
+      .append("pvt", question.pvt)
+      .append("type", question.type);
+
+    if(question.type.equals("multiple_choice")) {
+      doc.append("optCount", question.optCount)
+      .append("options", question.options);
+      
+      if(Integer.valueOf(System.getenv("OPTIONS")) != question.options.size()) {
+        throw new Error("Suas configurações apenas permitem questões de tamanho "+System.getenv("OPTIONS")+ ".");
+      }
+      
+      if(question.options.size() != Integer.valueOf(question.optCount)) {
+        return false;
+      }
+    }
 
     var id = question.id;
     if (id != null) {
@@ -220,7 +234,21 @@ public class QuestionDAO {
       .append("description", question.description)
       .append("statement", question.statement)
       .append("record", new Document(record))
-      .append("pvt", question.pvt);
+      .append("pvt", question.pvt)
+      .append("type", question.type);
+
+    if(question.type.equals("multiple_choice")) {
+      doc.append("optCount", question.optCount)
+        .append("options", question.options);
+
+      if(Integer.valueOf(System.getenv("OPTIONS")) != question.options.size()) {
+        throw new Error("Suas configurações apenas permitem questões de tamanho "+System.getenv("OPTIONS")+ ".");
+      }
+
+      if(question.options.size() != Integer.valueOf(question.optCount)) {
+        return false;
+      }
+    }
 
     var result = this.collection.replaceOne(
       eq(new ObjectId(id)),

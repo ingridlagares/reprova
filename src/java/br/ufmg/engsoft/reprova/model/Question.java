@@ -2,6 +2,7 @@ package br.ufmg.engsoft.reprova.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -34,7 +35,18 @@ public class Question {
    * Whether the question is private.
    */
   public final boolean pvt;
-
+  /**
+   * The type of the question, either open or multiple choice.
+   */
+  public final String type;
+  /**
+   * How many options the question have if the question is multiple choice.
+   */
+  public final String optCount;
+  /**
+   * The options in the multiple choice question.
+   */
+  public final List<String> options;
 
 
   /**
@@ -47,6 +59,9 @@ public class Question {
     protected String statement;
     protected Map<Semester, Map<String, Float>> record;
     protected boolean pvt = true;
+    protected String type;
+    protected String optCount;
+    protected List<String> options;
 
     public Builder id(String id) {
       this.id = id;
@@ -78,6 +93,20 @@ public class Question {
       return this;
     }
 
+    public Builder type(String type) {
+      this.type = type;
+      return this;
+    }
+
+    public Builder optCount(String optCount) {
+      this.optCount = optCount;
+      return this;
+    }
+
+    public Builder options(List<String> options) {
+      this.options = options;
+      return this;
+    }
 
     /**
      * Build the question.
@@ -112,7 +141,10 @@ public class Question {
         this.description,
         this.statement,
         this.record,
-        this.pvt
+        this.pvt,
+        this.type,
+        this.optCount,
+        this.options
       );
     }
   }
@@ -126,7 +158,10 @@ public class Question {
     String description,
     String statement,
     Map<Semester, Map<String, Float>> record,
-    boolean pvt
+    boolean pvt,
+    String type,
+    String optCount,
+    List<String> options
   ) {
     this.id = id;
     this.theme = theme;
@@ -134,6 +169,9 @@ public class Question {
     this.statement = statement;
     this.record = record;
     this.pvt = pvt;
+    this.type = type;
+    this.optCount = optCount;
+    this.options = options;
   }
 
 
@@ -157,7 +195,9 @@ public class Question {
         && this.description.equals(question.description)
         && this.statement.equals(question.statement)
         && this.record.equals(question.record)
-        && this.pvt == question.pvt;
+        && this.pvt == question.pvt
+        && this.type == question.type
+        && this.optCount == question.optCount;
   }
 
 
@@ -169,7 +209,10 @@ public class Question {
       this.description,
       this.statement,
       this.record,
-      this.pvt
+      this.pvt,
+      this.type,
+      this.optCount,
+      this.options
     );
   }
 
@@ -187,6 +230,9 @@ public class Question {
     builder.append("  desc: " + this.description + "\n");
     builder.append("  record: " + this.record + "\n");
     builder.append("  pvt: " + this.pvt + "\n");
+    builder.append("  type: " + this.type + "\n");
+    builder.append("  optCount: " + this.optCount + "\n");
+    builder.append("  options: " + this.options + "\n");
     if (this.statement != null)
       builder.append(
         "  head: " +
