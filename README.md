@@ -1,4 +1,4 @@
-# Reprova
+# urna
 
 Trabalho prático da disciplina de Reutilização de Software, DCC/UFMG, 2021/2
 
@@ -16,11 +16,11 @@ A aplicação depende de uma conexão com um banco de dados MongoDB, por esse mo
 
 Para a execução do programa é necessário a criação de um arquivo de nome `.env` no diretório inicial do projeto (mesmo nível do README e dockerfile) com as seguintes variáveis:
 
-* `REPROVA_MONGO`: URL do servidor Mongo,`mongodb://mongo:27017/?connectTimeoutMS=5000` para usar a instância do banco rodando em paralelo localmente.
+* `urna_MONGO`: URL do servidor Mongo,`mongodb://mongo:27017/?connectTimeoutMS=5000` para usar a instância do banco rodando em paralelo localmente.
 
-* `PORT`: Porta na qual o serviço do Reprova irá rodar, `8080` por padrão para ser compatível com as requisições na collection disponibilizada.
+* `PORT`: Porta na qual o serviço do urna irá rodar, `8080` por padrão para ser compatível com as requisições na collection disponibilizada.
 
-* `REPROVA_TOKEN`: Token utilizado para autenticação, `d2fad245dd1d8a4f863e3f1c32bdada723361e6f63cfddf56663e516e47347bb` por padrão para ser compatível com as requisições na collection disponibilizada.
+* `urna_TOKEN`: Token utilizado para autenticação, `d2fad245dd1d8a4f863e3f1c32bdada723361e6f63cfddf56663e516e47347bb` por padrão para ser compatível com as requisições na collection disponibilizada.
 
 Além disso, também é necessário configurar as features usando as seguintes variáveis ainda no arquivo `.env` que são variáveis booleanas, elas precisam estar sempre preenchidas, até mesmo quando a feature não é desejada, nesse caso se atribuindo o valor `false`:
 
@@ -32,9 +32,9 @@ Além disso, também é necessário configurar as features usando as seguintes v
 
 ## Postman para testes
 
-Nesta [coleção do Postman](https://raw.githubusercontent.com/VictorGazzinelli/reprova/master/Reprova.postman_collection.json) estão inclusos os endpoints da api com seus respectivos exemplos de saída, ao importar essa coleção para seu postman é possível testar e interagir com a api. 
+Nesta [coleção do Postman](https://raw.githubusercontent.com/VictorGazzinelli/urna/master/urna.postman_collection.json) estão inclusos os endpoints da api com seus respectivos exemplos de saída, ao importar essa coleção para seu postman é possível testar e interagir com a api. 
 Para importar a coleção siga os passos a seguir:
-1) Copie o [este link](https://raw.githubusercontent.com/VictorGazzinelli/reprova/master/Reprova.postman_collection.json)
+1) Copie o [este link](https://raw.githubusercontent.com/VictorGazzinelli/urna/master/urna.postman_collection.json)
 2) Abra seu postman (precisa ser a aplicação desktop)
 3) Em uma workspace de escolha clique no botão `import` na parte de cima da barra a esquerda onde ficam as requisições
 4) Selecione a opção `link`, cole o link copiado e continue
