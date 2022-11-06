@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "e06888a3-40f8-4623-b093-093bfbedbd8c",
-		"name": "urna",
-		"description": "Coleção destinada a testar os endpoints do trabalho da disciplina de Reuso de Software - urna",
+		"name": "Reprova",
+		"description": "Coleção destinada a testar os endpoints do trabalho da disciplina de Reuso de Software - Reprova",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [

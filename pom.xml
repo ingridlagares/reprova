@@ -6,8 +6,8 @@
   <modelVersion>4.0.0</modelVersion>
 
 
-  <groupId>urna</groupId>
-  <artifactId>urna</artifactId>
+  <groupId>reprova</groupId>
+  <artifactId>reprova</artifactId>
   <version>0.1</version>
   <packaging>jar</packaging>
 
@@ -82,13 +82,13 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>br.ufmg.engsoft.urna.Urna</mainClass>
+              <mainClass>br.ufmg.engsoft.reprova.Reprova</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
-          <finalName>urna</finalName>
+          <finalName>reprova</finalName>
           <appendAssemblyId>false</appendAssemblyId>
         </configuration>
       </plugin>

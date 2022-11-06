@@ -1,11 +1,11 @@
 from openjdk:13-alpine
 
-run mkdir -p /root/urna/
+run mkdir -p /root/reprova/
 
-workdir /root/urna/
+workdir /root/reprova/
 
-add target/urna.jar urna.jar
+add target/reprova.jar reprova.jar
 
 expose 8080
 
-cmd java -jar urna.jar
+cmd java -jar reprova.jar

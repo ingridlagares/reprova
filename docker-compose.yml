@@ -1,10 +1,10 @@
 version: '2.1'
 
 services:
-  urna:
-    container_name: urna
+  reprova:
+    container_name: reprova
     build: .
-    image: urna:v0.1
+    image: gahag/reprova:v0.1
     env_file:
       - .env
     ports:
