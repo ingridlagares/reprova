@@ -40,14 +40,14 @@ public class QuestionController {
   /**
    * Access token.
    */
-  protected static final String token = System.getenv("REPROVA_TOKEN");
+  protected static final String Token = System.getenv("REPROVA_TOKEN");
 
   /**
    * Messages.
    */
-  protected static final String unauthorized = "\"Unauthorized\"";
-  protected static final String invalid = "\"Invalid request\"";
-  protected static final String ok = "\"Ok\"";
+  protected static final String Unauthorized = "\"Unauthorized\"";
+  protected static final String Invalid = "\"Invalid request\"";
+  protected static final String Ok = "\"Ok\"";
 
   /**
    * Json formatter.
@@ -80,7 +80,7 @@ public class QuestionController {
    * Check if the given token is authorized.
    */
   protected static boolean authorized(String token) {
-    return QuestionController.token.equals(token);
+    return QuestionController.Token.equals(token);
   }
 
 
@@ -95,21 +95,25 @@ public class QuestionController {
     var auth = authorized(request.queryParams("token"));
 
     return id == null
-      ? this.get(request, response, auth)
-      : this.get(request, response, id, auth);
+      ? this.get(response, auth)
+      : this.get(response, id, auth);
   }
 
   /**
    * Get id endpoint: fetch the specified question from the database.
    * If not authorized, and the given question is private, returns an error message.
    */
-  protected Object get(Request request, Response response, String id, boolean auth) {
-    if (id == null)
+protected Object get(Response response, String id, boolean auth) {
+  if (id == null) {
+
       throw new IllegalArgumentException("id mustn't be null");
+    }
 
     response.type("application/json");
 
-    logger.info("Fetching question " + id);
+    if (logger.isInfoEnabled()) {
+      logger.info("Fetching question " + id);
+    }
 
 		GetQuestionByIdInput input = new GetQuestionByIdInput(id);
 		IGetQuestionByIdHandler handler = new GetQuestionByIdHandler();
@@ -120,13 +124,15 @@ public class QuestionController {
     if (question == null) {
       logger.error("Invalid request!");
       response.status(400);
-      return invalid;
+      return Invalid;
     }
 
     if (question.pvt && !auth) {
-      logger.info("Unauthorized token: " + token);
+      if (logger.isInfoEnabled()) {
+        logger.info("Unauthorized token: " + Token);
+      }
       response.status(403);
-      return unauthorized;
+      return Unauthorized;
     }
 
     logger.info("Done. Responding...");
@@ -140,7 +146,7 @@ public class QuestionController {
    * Get all endpoint: fetch all questions from the database.
    * If not authorized, fetches only public questions.
    */
-  protected Object get(Request request, Response response, boolean auth) {
+  protected Object get(Response response, boolean auth) {
     response.type("application/json");
 
     logger.info("Fetching questions.");
@@ -167,24 +173,25 @@ public class QuestionController {
    */
   protected Object post(Request request, Response response) {
     String body = request.body();
-
-    logger.info("Received questions post:" + body);
+    if (logger.isInfoEnabled()) {
+      logger.info("Received questions post:" + body);
+    }
 
     response.type("application/json");
 
-    var token = request.queryParams("token");
+    var newToken = request.queryParams("token");
 
-    if (!authorized(token)) {
-      logger.info("Unauthorized token: " + token);
+    if (!authorized(newToken)) {          
+    if (logger.isInfoEnabled()) {
+      logger.info("Unauthorized token: " + newToken);
+    }
       response.status(403);
-      return unauthorized;
+      return Unauthorized;
     }
 
-    if(System.getenv("MULTIPLE_CHOICE") == "false" 
-      && System.getenv("OPEN") == "false"
-    ) {
+    if("false".equals(System.getenv("MULTIPLE_CHOICE")) && "false".equals(System.getenv("OPEN"))) {
       response.status(403);
-      return invalid;
+      return Invalid;
     }
   
 		CreateQuestionInput input = new CreateQuestionInput(body);
@@ -197,7 +204,7 @@ public class QuestionController {
     } catch(Exception e) {
       logger.error("Invalid request payload!", e);
       response.status(400);
-      return invalid;
+      return Invalid;
     }
 
     response.status(
@@ -207,7 +214,7 @@ public class QuestionController {
 
     logger.info("Done. Responding...");
 
-    return output.isCreated() ? ok : invalid;
+    return output.isCreated() ? Ok : Invalid;
   }
 
   /**
@@ -220,17 +227,21 @@ public class QuestionController {
     String body = request.body();
 
     var id = request.queryParams("id");
-    var token = request.queryParams("token");
+    var newToken = request.queryParams("token");
 
-    logger.info("Received questions put:" + body);
+    if(logger.isInfoEnabled()) {
+      logger.info("Received questions put:" + body);
+    }
 
     response.type("application/json");
 
 
-    if (!authorized(token)) {
-      logger.info("Unauthorized token: " + token);
+    if (!authorized(newToken)) {
+      if(logger.isInfoEnabled()) {
+        logger.info("Unauthorized token: " + newToken);
+      }
       response.status(403);
-      return unauthorized;
+      return Unauthorized;
     }
 
     UpdateQuestionInput input = new UpdateQuestionInput(id, body);
@@ -243,7 +254,7 @@ public class QuestionController {
     } catch(Exception e) {
       logger.error("Invalid request payload!", e);
       response.status(400);
-      return invalid;
+      return Invalid;
     }
 
     response.status(
@@ -253,7 +264,7 @@ public class QuestionController {
 
     logger.info("Done. Responding...");
 
-    return output.isUpdated() ? ok : invalid;
+    return output.isUpdated() ? Ok : Invalid;
   }
 
 
@@ -268,21 +279,25 @@ public class QuestionController {
     response.type("application/json");
 
     var id = request.queryParams("id");
-    var token = request.queryParams("token");
+    var newToken = request.queryParams("token");
 
-    if (!authorized(token)) {
-      logger.info("Unauthorized token: " + token);
+    if (!authorized(newToken)) {
+      if(logger.isInfoEnabled()) {
+        logger.info("Unauthorized token: " + newToken);
+      }
       response.status(403);
-      return unauthorized;
+      return Unauthorized;
     }
 
     if (id == null) {
       logger.error("Invalid request!");
       response.status(400);
-      return invalid;
+      return Invalid;
     }
 
-    logger.info("Deleting question " + id);
+    if(logger.isInfoEnabled()) {
+      logger.info("Deleting question " + id);
+    }
 
 		DeleteQuestionInput input = new DeleteQuestionInput(id);
 		IDeleteQuestionHandler handler = new DeleteQuestionHandler();
@@ -296,6 +311,6 @@ public class QuestionController {
               : 400
     );
 
-    return output.isDeleted() ? ok : invalid;
+    return output.isDeleted() ? Ok : Invalid;
   }
 }
