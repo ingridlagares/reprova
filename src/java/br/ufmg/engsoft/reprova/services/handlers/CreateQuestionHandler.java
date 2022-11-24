@@ -19,7 +19,7 @@ public class CreateQuestionHandler implements ICreateQuestionHandler {
       .parse(input.getBody(), Question.Builder.class)
       .build();
       
-      if(System.getenv("MULTIPLE_CHOICE") == "false" 
+      if(System.getenv("MULTIPLE_CHOICE").equals("false") 
       && question.type.equals("multiple_choice")
       ) {
         throw new Error("Suas configurações não te dão acesso a esta funcionalidade.");
