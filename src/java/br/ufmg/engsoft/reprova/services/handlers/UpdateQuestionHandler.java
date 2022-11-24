@@ -9,7 +9,7 @@ import br.ufmg.engsoft.reprova.services.output.UpdateQuestionOutput;
 
 public class UpdateQuestionHandler implements IUpdateQuestionHandler {
 
-	private static QuestionDAO DAO =  QuestionDAO.getInstance();
+	private static QuestionDAO dataAccess =  QuestionDAO.getInstance();
 	
 	@Override
 	public UpdateQuestionOutput handle(UpdateQuestionInput input) {
@@ -34,7 +34,7 @@ public class UpdateQuestionHandler implements IUpdateQuestionHandler {
       throw new Error(e);
     }
 
-    boolean updated = DAO.update(input.getId(), question);
+    boolean updated = dataAccess.update(input.getId(), question);
     return new UpdateQuestionOutput(updated);
 	}
 	
