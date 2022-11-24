@@ -9,7 +9,7 @@ import br.ufmg.engsoft.reprova.services.output.CreateQuestionOutput;
 
 public class CreateQuestionHandler implements ICreateQuestionHandler {
 
-  private static QuestionDAO DAO =  QuestionDAO.getInstance();
+  private static QuestionDAO dataAccess =  QuestionDAO.getInstance();
 
 	@Override
 	public CreateQuestionOutput handle(CreateQuestionInput input) {
@@ -34,7 +34,7 @@ public class CreateQuestionHandler implements ICreateQuestionHandler {
       throw new Error(e);
     }
   
-    boolean created = DAO.add(question);
+    boolean created = dataAccess.add(question);
 		
 		return new CreateQuestionOutput(created);
 	}
