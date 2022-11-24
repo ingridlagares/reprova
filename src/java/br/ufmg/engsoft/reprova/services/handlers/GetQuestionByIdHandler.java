@@ -8,11 +8,11 @@ import br.ufmg.engsoft.reprova.services.input.GetQuestionByIdInput;
 
 public class GetQuestionByIdHandler implements IGetQuestionByIdHandler {
 
-	private static QuestionDAO DAO =  QuestionDAO.getInstance();
+	private static QuestionDAO dataAccess =  QuestionDAO.getInstance();
 
 	@Override
 	public GetQuestionByIdOutput handle(GetQuestionByIdInput input) {
-		Question question = DAO.get(input.getId());
+		Question question = dataAccess.get(input.getId());
 
     return new GetQuestionByIdOutput(question);
 	}
