@@ -1,6 +1,6 @@
 # Reprova
 
-Trabalho prático da disciplina de Reutilização de Software, DCC/UFMG, 2021/2
+Trabalho prático da disciplina de Reutilização de Software, DCC/UFMG, 2022/2
 
 ## Instruções de construção/ambiente (UNIX)
 
