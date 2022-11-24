@@ -7,11 +7,11 @@ import br.ufmg.engsoft.reprova.services.output.DeleteQuestionOutput;
 
 public class DeleteQuestionHandler implements IDeleteQuestionHandler {
 
-	private static QuestionDAO DAO =  QuestionDAO.getInstance();
+	private static QuestionDAO dataAccess =  QuestionDAO.getInstance();
 
 	@Override
 	public DeleteQuestionOutput handle(DeleteQuestionInput input) {
-		boolean deleted = DAO.remove(input.getId());
+		boolean deleted = dataAccess.remove(input.getId());
 		
     return new DeleteQuestionOutput(deleted);
 	}
