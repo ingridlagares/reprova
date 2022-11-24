@@ -189,6 +189,7 @@ protected Object get(Response response, String id, boolean auth) {
       return Unauthorized;
     }
 
+
     if("false".equals(System.getenv("MULTIPLE_CHOICE")) && "false".equals(System.getenv("OPEN"))) {
       response.status(403);
       return Invalid;
