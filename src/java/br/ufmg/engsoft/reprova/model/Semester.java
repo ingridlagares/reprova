@@ -15,8 +15,8 @@ public class Semester {
    * Either 1 or 2.
    */
   public enum Reference {
-    _1(1),
-    _2(2);
+    one(1),
+    two(2);
 
     public final int value;
     Reference(int i) {
