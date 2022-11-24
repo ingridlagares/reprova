@@ -4,7 +4,8 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import br.ufmg.engsoft.reprova.mime.json.Json;
 import br.ufmg.engsoft.reprova.model.Question;
@@ -24,12 +25,12 @@ public class JsonTest {
       .statement("statement")
       .record(
         Map.of(
-          new Semester(2019, Semester.Reference._1), Map.of(
+          new Semester(2019, Semester.Reference.one), Map.of(
             "tw", 50.0f,
             "tz", 49.5f,
             "tx", 51.2f
           ),
-          new Semester(2020, Semester.Reference._2), Collections.emptyMap()
+          new Semester(2020, Semester.Reference.one), Collections.emptyMap()
         )
       )
       .pvt(false)
@@ -43,8 +44,6 @@ public class JsonTest {
       .parse(json, Question.Builder.class)
       .build();
 
-    assertTrue(
-      question.equals(questionCopy)
-    );
+    assertEquals(question,questionCopy);
   }
 }
