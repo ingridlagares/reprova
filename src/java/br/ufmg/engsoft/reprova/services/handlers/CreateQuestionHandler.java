@@ -24,7 +24,7 @@ public class CreateQuestionHandler implements ICreateQuestionHandler {
       ) {
         throw new Error("Suas configurações não te dão acesso a esta funcionalidade.");
       }
-      if(System.getenv("OPEN") == "false"
+      if(System.getenv("OPEN").equals("false")
         && question.type.equals("open")
       ) {
         throw new Error("Suas configurações não te dão acesso a esta funcionalidade.");
