@@ -9,11 +9,13 @@ import br.ufmg.engsoft.reprova.mime.json.Json;
 /**
  * Servuce for Question entities.
  */
-public class QuestionService {
+public final class QuestionService {
+  private QuestionService() {}
+
   /**
    * DAO for Question.
    */
-  private static QuestionDAO DAO =  QuestionDAO.getInstance();
+  private static QuestionDAO dataAccess =  QuestionDAO.getInstance();
   
     /**
    * Create a new question.
@@ -31,8 +33,7 @@ public class QuestionService {
       throw new Error(e);
     }
     
-    boolean created = DAO.add(question);
-    return created;
+    return dataAccess.add(question);
   }
   
   /**
@@ -52,8 +53,7 @@ public class QuestionService {
       throw new Error(e);
     }
   
-    boolean created = DAO.update(id, question);
-    return created;
+    return dataAccess.update(id, question);
   }
 
   /**
@@ -62,8 +62,7 @@ public class QuestionService {
    * @return The question, or null if no such question.
    */
   public static Question getByID(String id) {
-    Question question = DAO.get(id);
-    return question;
+    return dataAccess.get(id);
   }
 
     /**
@@ -72,8 +71,7 @@ public class QuestionService {
    * @return all the questions, or null if no questions on database.
    */
   public static Collection<Question> getAll(boolean auth) {
-    Collection<Question> questions = DAO.list(null, auth ? null : false);
-    return questions;
+    return dataAccess.list(null, auth ? null : false);
   }
 
   /**
@@ -83,7 +81,6 @@ public class QuestionService {
    * @throws IllegalArgumentException  if any parameter is null
    */
   public static boolean deleteByID(String id) {
-    boolean deleted = DAO.remove(id);
-    return deleted;
+    return dataAccess.remove(id);
   }
 }
