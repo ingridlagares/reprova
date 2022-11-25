@@ -28,8 +28,9 @@ public class Semester {
      */
     protected static final Map<Integer, Reference> valueMap =
       new HashMap<Integer, Reference>(); static {
-      for (var ref : Reference.values())
+      for (var ref : Reference.values()){
         valueMap.put(ref.value, ref);
+      }
     }
 
     /**
@@ -38,8 +39,9 @@ public class Semester {
     public static Reference fromInt(int i) {
       Reference ref = valueMap.get(Integer.valueOf(i));
 
-      if (ref == null)
+      if (ref == null) {
         throw new IllegalArgumentException();
+      }
 
       return ref;
     }
@@ -64,8 +66,9 @@ public class Semester {
    * @throws IllegalArgumentException  if any parameter is null
    */
   public Semester(int year, Reference ref) {
-    if (ref == null)
+    if (ref == null){
       throw new IllegalArgumentException("ref mustn't be null");
+    }
 
     this.year = year;
     this.ref = ref;
@@ -75,11 +78,13 @@ public class Semester {
 
   @Override
   public boolean equals(Object obj) {
-    if (obj == this)
+    if (obj == this){
       return true;
+    }
 
-    if (!(obj instanceof Semester))
+    if (!(obj instanceof Semester)){
       return false;
+    }
 
     var semester = (Semester) obj;
 
