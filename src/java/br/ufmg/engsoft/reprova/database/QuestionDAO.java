@@ -20,13 +20,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.ufmg.engsoft.reprova.mime.json.Json;
+import br.ufmg.engsoft.reprova.model.QuestionBuilder;
+import br.ufmg.engsoft.reprova.model.MultipleChoiceQuestion;
 import br.ufmg.engsoft.reprova.model.Question;
 
 
 /**
  * DAO for Question class on mongodb.
  */
-public class QuestionDAO {
+public final class QuestionDAO {
   /**
    * Singleton instance.
    */
@@ -84,7 +86,7 @@ public class QuestionDAO {
 
     try {
       var question = json
-        .parse(doc, Question.Builder.class)
+        .parse(doc, QuestionBuilder.class)
         .build();
 
       logger.info("Parsed question: " + question);
@@ -178,22 +180,22 @@ public class QuestionDAO {
       .append("description", question.description)
       .append("statement", question.statement)
       .append("record", new Document(record))
-      .append("pvt", question.pvt)
-      .append("type", question.type);
+      .append("pvt", question.pvt);
 
-    if(question.type.equals("multiple_choice")) {
-      doc.append("optCount", question.optCount)
-      .append("options", question.options);
+    if(question instanceof MultipleChoiceQuestion) {
+      MultipleChoiceQuestion multipleChoiceQuestion = (MultipleChoiceQuestion) question;
+      doc.append("optCount", multipleChoiceQuestion.optCount)
+      .append("options", multipleChoiceQuestion.options);
       
-      if(Integer.valueOf(System.getenv("OPTIONS")) != question.options.size()) {
+      if(Integer.valueOf(System.getenv("OPTIONS")) != multipleChoiceQuestion.options.size()) {
         throw new Error("Suas configurações apenas permitem questões de tamanho "+System.getenv("OPTIONS")+ ".");
       }
       
-      if(question.options.size() != Integer.valueOf(question.optCount)) {
+      if(multipleChoiceQuestion.options.size() != Integer.valueOf(multipleChoiceQuestion.optCount)) {
         return false;
       }
       
-      if(Integer.valueOf(question.optCount) < 2) {
+      if(Integer.valueOf(multipleChoiceQuestion.optCount) < 2) {
         return false;
       }
     }
@@ -238,22 +240,23 @@ public class QuestionDAO {
       .append("description", question.description)
       .append("statement", question.statement)
       .append("record", new Document(record))
-      .append("pvt", question.pvt)
-      .append("type", question.type);
+      .append("pvt", question.pvt);
 
-    if(question.type.equals("multiple_choice")) {
-      doc.append("optCount", question.optCount)
-        .append("options", question.options);
 
-      if(Integer.valueOf(System.getenv("OPTIONS")) != question.options.size()) {
+      if(question instanceof MultipleChoiceQuestion) {
+        MultipleChoiceQuestion multipleChoiceQuestion = (MultipleChoiceQuestion) question;
+      doc.append("optCount", multipleChoiceQuestion.optCount)
+        .append("options", multipleChoiceQuestion.options);
+
+      if(Integer.valueOf(System.getenv("OPTIONS")) != multipleChoiceQuestion.options.size()) {
         throw new Error("Suas configurações apenas permitem questões de tamanho "+System.getenv("OPTIONS")+ ".");
       }
       
-      if(question.options.size() != Integer.valueOf(question.optCount)) {
+      if(multipleChoiceQuestion.options.size() != Integer.valueOf(multipleChoiceQuestion.optCount)) {
         return false;
       }
 
-      if(Integer.valueOf(question.optCount) < 2) {
+      if(Integer.valueOf(multipleChoiceQuestion.optCount) < 2) {
         return false;
       }
     }

@@ -3,6 +3,7 @@ package br.ufmg.engsoft.reprova.services;
 import java.util.Collection;
 
 import br.ufmg.engsoft.reprova.database.QuestionDAO;
+import br.ufmg.engsoft.reprova.model.QuestionBuilder;
 import br.ufmg.engsoft.reprova.model.Question;
 import br.ufmg.engsoft.reprova.mime.json.Json;
 
@@ -26,7 +27,7 @@ public final class QuestionService {
     Question question;
     try {
       question = new Json()
-      .parse(body, Question.Builder.class)
+      .parse(body, QuestionBuilder.class)
       .build();
     }
     catch (Exception e) {
@@ -46,7 +47,7 @@ public final class QuestionService {
     Question question;
     try {
       question = new Json()
-        .parse(body, Question.Builder.class)
+        .parse(body, QuestionBuilder.class)
         .build();
     }
     catch (Exception e) {

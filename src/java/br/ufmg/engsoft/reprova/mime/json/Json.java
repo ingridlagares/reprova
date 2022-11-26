@@ -9,7 +9,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
-import br.ufmg.engsoft.reprova.model.Question;
+import br.ufmg.engsoft.reprova.model.QuestionBuilder;
 import br.ufmg.engsoft.reprova.model.Semester;
 
 
@@ -50,10 +50,10 @@ public class Json {
    * Deserializer for Question.Builder.
    */
   protected static class QuestionBuilderDeserializer
-    implements JsonDeserializer<Question.Builder>
+    implements JsonDeserializer<QuestionBuilder>
   {
     @Override
-    public Question.Builder deserialize(
+    public QuestionBuilder deserialize(
       JsonElement json,
       Type typeOfT,
       JsonDeserializationContext context
@@ -69,7 +69,7 @@ public class Json {
         .create()
         .fromJson(
           json.getAsJsonObject(),
-          Question.Builder.class
+          QuestionBuilder.class
         );
 
       // Mongo's id property doesn't match Question.id:
@@ -103,7 +103,7 @@ public class Json {
     var parserBuilder = new GsonBuilder();
 
     parserBuilder.registerTypeAdapter(
-      Question.Builder.class,
+      QuestionBuilder.class,
       new QuestionBuilderDeserializer()
     );
 

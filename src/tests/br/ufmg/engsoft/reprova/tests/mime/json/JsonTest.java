@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import br.ufmg.engsoft.reprova.mime.json.Json;
-import br.ufmg.engsoft.reprova.model.Question;
+import br.ufmg.engsoft.reprova.model.QuestionBuilder;
 import br.ufmg.engsoft.reprova.model.Semester;
 
 
@@ -18,7 +18,7 @@ class JsonTest {
    */
   @Test
   void question() {
-    var question = new Question.Builder()
+    var question = new QuestionBuilder()
       .id("id")
       .theme("theme")
       .description("description")
@@ -41,7 +41,7 @@ class JsonTest {
     var json = formatter.render(question);
 
     var questionCopy = formatter
-      .parse(json, Question.Builder.class)
+      .parse(json, QuestionBuilder.class)
       .build();
 
     assertEquals(question,questionCopy);
